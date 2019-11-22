@@ -1,3 +1,8 @@
+/**
+* Implementation by VaTTeRGeR
+* Reference: "Understanding the Disruptor, a Beginner's Guide to Hardcore Concurrency -Trisha Gee & Mike Barker"
+* Link: https://www.youtube.com/watch?v=DCdGlxBbKU4
+*/
 
 package de.vatterger.util;
 
@@ -39,10 +44,10 @@ public class AtomicRingBuffer <T> {
 		sequenceWrite = new AtomicLong(-1);
 		sequenceWriteThreadLocal = -1;
 		
-		data = (T[])new Object[capacity];
-
 		sequenceRead = new AtomicLong(0);
 		sequenceReadThreadLocal = 0;
+		
+		data = (T[])new Object[capacity];
 	}
 
 	/**
