@@ -17,16 +17,13 @@ public class AtomicRingBuffer <T> {
 	/** Capacity of the Ringbuffer */
 	private final int capacity;
 
-
 	private long sequenceWriteThreadLocal;
 
 	private final AtomicLong sequenceWrite;
 
-
 	private long sequenceReadThreadLocal;
 
 	private final AtomicLong sequenceRead;
-
 
 	/** Backing array of the RingBuffer */
 	private final T[] data;
@@ -78,7 +75,7 @@ public class AtomicRingBuffer <T> {
 	 */
 	public T get() {
 		
-		if(sequenceReadThreadLocal <= sequenceWrite.get()) {
+		if(has()) {
 
 			T value = data[(int)(sequenceReadThreadLocal++ % capacity)];
 			
@@ -96,7 +93,7 @@ public class AtomicRingBuffer <T> {
 	 */
 	public T head() {
 		
-		if(sequenceReadThreadLocal <= sequenceWrite.get()) {
+		if(has()) {
 			return data[(int)(sequenceReadThreadLocal % capacity)];
 		}
 		
@@ -140,9 +137,7 @@ public class AtomicRingBuffer <T> {
 	 * Resets the state of the RingBuffer pointers and fills the backing array with null references. Useful to get rid of objects that are being kept alive by residing in this RingBuffer.
 	 */
 	public synchronized void clearDeep() {
-		
 		clear();
-		
 		Arrays.fill(data, null);
 	}
 	
