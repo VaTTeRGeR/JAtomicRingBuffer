@@ -19,11 +19,11 @@ public class AtomicRingBuffer <T> {
 
 	private long sequenceWriteThreadLocal;
 
-	private final AtomicLong sequenceWrite;
+	private final PaddedAtomicLong sequenceWrite;
 
 	private long sequenceReadThreadLocal;
 
-	private final AtomicLong sequenceRead;
+	private final PaddedAtomicLong sequenceRead;
 
 	/** Backing array of the RingBuffer */
 	private final T[] data;
@@ -38,11 +38,11 @@ public class AtomicRingBuffer <T> {
 		
 		this.capacity = capacity;
 		
-		sequenceWrite = new AtomicLong(-1);
+		sequenceWrite = new PaddedAtomicLong(-1);
 		sequenceWriteThreadLocal = -1;
 		
-		sequenceRead = new AtomicLong(0);
-		sequenceReadThreadLocal = 0;
+		sequenceRead = new PaddedAtomicLong(0);
+		sequenceReadThreadLocal = sequenceRead.calcZero(); // avoids "optimization" of padding
 		
 		data = (T[])new Object[capacity];
 	}
@@ -146,5 +146,23 @@ public class AtomicRingBuffer <T> {
 	 */
 	public int capacity() {
 		return capacity;
+	}
+	
+	@SuppressWarnings("serial")
+	private class PaddedAtomicLong extends AtomicLong {
+		
+		private volatile long p1 = 1, p2 = 2, p3 = 3, p4 = 4, p5 = 5, p6 = -15;
+		
+		private PaddedAtomicLong() {
+			super(0);
+		}
+		
+		private PaddedAtomicLong(long value) {
+			super(value);
+		}
+		
+		private long calcZero() {
+			return p1 + p2 + p3 + p4 + p5 + p6;
+		}
 	}
 }
